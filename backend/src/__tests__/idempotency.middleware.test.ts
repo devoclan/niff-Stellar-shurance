@@ -10,12 +10,23 @@ import * as cache from '../redis/cache';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function makeReq(overrides: Partial<{
+interface FakeReq {
   method: string;
   path: string;
   headers: Record<string, string>;
-  user: { sub: string };
-}> = {}): any {
+  user?: { sub: string };
+}
+
+interface FakeRes {
+  statusCode: number;
+  _headers: Record<string, string>;
+  _body: unknown;
+  setHeader(k: string, v: string): void;
+  status(code: number): FakeRes;
+  json(body: unknown): FakeRes;
+}
+
+function makeReq(overrides: Partial<FakeReq> = {}): FakeReq {
   return {
     method: 'POST',
     path: '/ipfs/upload',
@@ -24,8 +35,8 @@ function makeReq(overrides: Partial<{
   };
 }
 
-function makeRes(): any {
-  const res: any = {
+function makeRes(): FakeRes {
+  const res: FakeRes = {
     statusCode: 200,
     _headers: {} as Record<string, string>,
     _body: undefined as unknown,

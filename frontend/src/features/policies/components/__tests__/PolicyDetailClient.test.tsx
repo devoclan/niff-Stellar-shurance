@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import React from 'react'
 
@@ -26,11 +26,10 @@ const mockPolicy: PolicyDto = {
   claims: [],
 }
 
+const mockWalletState = { connected: false, address: null as string | null };
+
 jest.mock('@/features/wallet', () => ({
-  useWallet: () => ({
-    connected: false,
-    address: null,
-  }),
+  useWallet: () => mockWalletState,
 }))
 
 jest.mock('@/config/env', () => ({
@@ -48,6 +47,8 @@ describe('PolicyDetailClient', () => {
     queryClient = new QueryClient({
       defaultOptions: { queries: { retry: false } },
     })
+    mockWalletState.connected = false;
+    mockWalletState.address = null;
   })
 
   it('renders coverage summary correctly', () => {
@@ -121,13 +122,8 @@ describe('PolicyDetailClient', () => {
   })
 
   it('shows beneficiary warning when different from connected wallet', () => {
-    jest.resetModules()
-    jest.mock('@/features/wallet', () => ({
-      useWallet: () => ({
-        connected: true,
-        address: 'GDIFFERENT',
-      }),
-    }))
+    mockWalletState.connected = true;
+    mockWalletState.address = 'GDIFFERENT';
 
     const policyWithBeneficiary: PolicyDto = {
       ...mockPolicy,

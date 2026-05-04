@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { AlertTriangle, Download, Loader2, RefreshCw, ShieldAlert } from 'lucide-react'
+import { Download, Loader2, RefreshCw, ShieldAlert } from 'lucide-react'
 import Link from 'next/link'
 
 import { Button } from '@/components/ui/button'

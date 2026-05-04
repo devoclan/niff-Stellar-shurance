@@ -204,6 +204,7 @@ const CSP_HEADER = reportOnly
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  transpilePackages: ['@creit.tech/stellar-wallets-kit', 'next-intl', 'use-intl'],
   images: {
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200],

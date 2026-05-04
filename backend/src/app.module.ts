@@ -2,7 +2,6 @@ import { Module, MiddlewareConsumer, NestModule, RequestMethod } from '@nestjs/c
 import { ConfigModule } from '@nestjs/config';
 import { TerminusModule } from '@nestjs/terminus';
 import { ThrottlerModule, ThrottlerStorage } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
 import { validateEnvironment } from './config/env.validation';
 import { HealthModule } from './health/health.module';
 import { PrismaModule } from './prisma/prisma.module';

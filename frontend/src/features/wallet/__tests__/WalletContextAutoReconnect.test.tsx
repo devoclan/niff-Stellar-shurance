@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, act, waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { StellarWalletsKit } from '@creit.tech/stellar-wallets-kit';
 import { WalletProvider, useWalletContext } from '../context/WalletContext';
 import { toast } from '@/components/ui/use-toast';

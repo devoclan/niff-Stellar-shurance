@@ -123,7 +123,6 @@ export const TENANT_SCOPED_MODELS = ['claim', 'policy'] as const;
  */
 export function queryBypassesTenantFilter(code: string): string[] {
   const violations: string[] = [];
-  const lines = code.split('\n');
 
   // Pattern: prisma.<model>.findMany/findFirst/findUnique({ where: { ... } })
   // where the where object does NOT contain claimTenantWhere / policyTenantWhere

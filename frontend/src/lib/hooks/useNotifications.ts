@@ -36,7 +36,7 @@ export function claimNeedsVote(
  * Returns notification title + body that are safe to display on lock screens
  * and shared devices. No claim amounts, policy details, or personal data.
  */
-function buildStatusChangeNotification(update: ClaimStatusUpdate): {
+function buildStatusChangeNotification(_update: ClaimStatusUpdate): {
   title: string;
   body: string;
 } {

@@ -1,5 +1,6 @@
 import { Injectable, CanActivate, ExecutionContext, ForbiddenException, Logger } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { Request } from 'express';
 import { AuthIdentityService } from '../../auth/auth-identity.service';
 
 /**
@@ -61,13 +62,13 @@ export class AdminRoleGuard implements CanActivate {
     }
   }
 
-  private getRequest(context: ExecutionContext): any {
+  private getRequest(context: ExecutionContext): Request {
     if (context.getType() === 'http') {
-      return context.switchToHttp().getRequest();
+      return context.switchToHttp().getRequest<Request>();
     }
     
     // GraphQL context
-    const gqlContext = context.getArgByIndex(2);
-    return gqlContext?.req || gqlContext;
+    const gqlContext = context.getArgByIndex(2) as { req?: Request } | Request | undefined;
+    return ((gqlContext as { req?: Request })?.req ?? gqlContext) as Request;
   }
 }

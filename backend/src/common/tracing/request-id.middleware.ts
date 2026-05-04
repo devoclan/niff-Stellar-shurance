@@ -1,6 +1,6 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-import { trace, context, propagation, SpanStatusCode } from '@opentelemetry/api';
+import { trace } from '@opentelemetry/api';
 import { randomUUID } from 'crypto';
 
 @Injectable()

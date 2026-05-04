@@ -36,7 +36,7 @@ export class QueueMonitorService implements OnModuleInit, OnModuleDestroy {
       this.queues.push(q);
 
       // Listen for failed events to record DLQ metrics with job type + reason
-      q.on('failed' as any, (job: Job | undefined, err: Error) => {
+      q.on('failed' as string, (job: Job | undefined, err: Error) => {
         if (!job) return;
         const isExhausted = (job.attemptsMade ?? 0) >= DLQ_MAX_ATTEMPTS;
         if (isExhausted) {

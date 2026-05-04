@@ -342,7 +342,6 @@ describe('Admin Role Guard Enforcement', () => {
 
   describe('Admin Role Required', () => {
     it('guard rejects non-admin role (unit test)', async () => {
-      const { Reflector } = require('@nestjs/core');
       const mockReflector = { get: jest.fn().mockReturnValue(false) };
       const mockAuthIdentity = {
         resolveRequestIdentity: jest.fn().mockResolvedValue({ kind: 'staff', staffId: 's1', email: 'a@b.com', role: 'support_readonly' }),

@@ -25,7 +25,7 @@ import { useToast } from '@/components/ui/use-toast'
 import { RampButton } from '@/components/ramp/ramp-button'
 import { getConfig } from '@/config/env'
 import { PolicyAPI, PolicyError, getPolicyErrorMessage, getExplorerUrl } from '@/lib/api/policy'
-import { QuoteError, getQuoteErrorMessage } from '@/lib/api/quote'
+
 import { PolicyInitiationSchema, PolicyInitiationData, Transaction, Policy } from '@/lib/schemas/policy'
 import type { QuoteResponse } from '@/lib/schemas/quote'
 import { formatTokenAmount } from '@/lib/formatTokenAmount'
@@ -42,7 +42,7 @@ export function PolicyInitiation({ quoteId: propQuoteId }: PolicyInitiationProps
   const quoteId = propQuoteId || searchParams.get('quoteId') || ''
   
   const [currentStep, setCurrentStep] = useState(0)
-  const [quote, setQuote] = useState<QuoteResponse | null>(null)
+  const [quote, _setQuote] = useState<QuoteResponse | null>(null)
   const [transaction, setTransaction] = useState<Transaction | null>(null)
   const [policy, setPolicy] = useState<Policy | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)

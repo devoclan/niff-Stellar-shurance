@@ -7,9 +7,10 @@
  * and run only when REDIS_URL points to a real Redis server.
  */
 import { Test } from '@nestjs/testing';
-import { Queue, Worker, Job } from 'bullmq';
+import { Worker, Job } from 'bullmq';
 import { QueueMonitorService, DLQ_MAX_ATTEMPTS } from './queue-monitor.service';
 import { MetricsService } from '../metrics/metrics.service';
+import IORedis from 'ioredis-mock';
 
 // Minimal MetricsService stub
 const metricsMock = {
@@ -19,11 +20,7 @@ const metricsMock = {
 
 // We test with a real in-process Queue/Worker backed by ioredis-mock
 jest.mock('../redis/client', () => ({
-  getBullMQConnection: () => {
-     
-    const IORedis = require('ioredis-mock');
-    return new IORedis();
-  },
+  getBullMQConnection: () => new IORedis(),
 }));
 
 // Skip these tests in unit test mode — bullmq v5 Lua scripts require real Redis
@@ -68,14 +65,14 @@ describeIfRealRedis('QueueMonitorService — DLQ behaviour', () => {
       'indexer',
       async () => { throw new Error('intentional failure'); },
       {
-        connection: (indexerQueue as any).opts.connection,
+      connection: (indexerQueue as { opts: { connection: object } }).opts.connection,
         autorun: true,
       },
     );
 
     // Wait until the job is exhausted
     await new Promise<void>((resolve) => {
-      worker.on('failed', (_job: Job | undefined, _err: Error) => {
+      worker.on('failed', (_job: Job | undefined, _error: Error) => {
         if ((_job?.attemptsMade ?? 0) >= DLQ_MAX_ATTEMPTS) resolve();
       });
     });
@@ -98,7 +95,7 @@ describeIfRealRedis('QueueMonitorService — DLQ behaviour', () => {
     const worker = new Worker(
       'notifications',
       async () => { throw new Error('smtp down'); },
-      { connection: (q as any).opts.connection, autorun: true },
+      { connection: (q as { opts: { connection: object } }).opts.connection, autorun: true },
     );
 
     await new Promise<void>((resolve) => {
@@ -124,7 +121,7 @@ describeIfRealRedis('QueueMonitorService — DLQ behaviour', () => {
     const worker = new Worker(
       'indexer',
       async () => { throw new Error('fail once'); },
-      { connection: (q as any).opts.connection, autorun: true },
+      { connection: (q as { opts: { connection: object } }).opts.connection, autorun: true },
     );
 
     await new Promise<void>((resolve) => {

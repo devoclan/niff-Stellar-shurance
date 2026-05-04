@@ -32,7 +32,7 @@ const WALLETS: { id: WalletId; label: string; chromeUrl: string; firefoxUrl: str
 ]
 
 export function WalletConnectButton() {
-  const { address, connectionStatus, activeWalletId, connect, disconnect } = useWallet()
+  const { address, connectionStatus, connect, disconnect } = useWallet()
   const [open, setOpen] = useState(false)
   const [copied, setCopied] = useState(false)
 

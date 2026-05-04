@@ -3,7 +3,7 @@
  */
 import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { WalletAddress } from '../wallet-address'
+import { WalletAddress } from '../ui/wallet-address'
 
 // Mock toast so it doesn't throw in jsdom
 jest.mock('@/components/ui/use-toast', () => ({

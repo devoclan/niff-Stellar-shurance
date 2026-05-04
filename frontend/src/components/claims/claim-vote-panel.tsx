@@ -158,7 +158,7 @@ export function ClaimVotePanel({ claimId }: ClaimVotePanelProps) {
     } finally {
       setPendingVote(null)
     }
-  }, [claimId, pendingVote, requestSignature, toast, walletAddress])
+  }, [claimId, pendingVote, signTransaction, toast, walletAddress])
 
   const handleCancel = useCallback(() => {
     setPendingVote(null)

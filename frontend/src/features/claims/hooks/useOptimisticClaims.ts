@@ -14,7 +14,7 @@
  * Optimistic state is session-only (React state) — never persisted to storage.
  */
 
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import { useOptimisticState, useConfirmationPoller } from '@/lib/optimistic';
 import type { ClaimBoard } from '@/lib/schemas/claims-board';
 

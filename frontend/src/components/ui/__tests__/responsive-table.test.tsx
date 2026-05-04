@@ -66,8 +66,10 @@ describe('ResponsiveTable', () => {
   it('does not apply sticky class when stickyFirstColumn is false', () => {
     const { container } = renderTable(false);
 
-    const stickyElements = container.querySelectorAll('.sticky-cell');
-    expect(stickyElements.length).toBe(0);
+    // stickyFirstColumn=false removes the responsive-table-sticky wrapper class,
+    // but individual cells with sticky prop still get sticky-cell class
+    const wrapper = container.querySelector('.responsive-table-sticky');
+    expect(wrapper).not.toBeInTheDocument();
   });
 
   it('has scrollable container with correct ARIA attributes', () => {

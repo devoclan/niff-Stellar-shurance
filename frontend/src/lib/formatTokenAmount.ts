@@ -33,7 +33,7 @@ export function formatTokenAmount(
 
   return new Intl.NumberFormat(locale, {
     minimumFractionDigits: 2,
-    maximumFractionDigits: decimals,
+    maximumFractionDigits: Math.max(2, decimals),
   }).format(Number(decimalStr))
 }
 

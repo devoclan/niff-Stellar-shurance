@@ -59,6 +59,7 @@ describe('useConfirmationPoller', () => {
     await act(async () => {
       jest.advanceTimersByTime(3_500);
       await Promise.resolve();
+      await Promise.resolve();
     });
 
     expect(onConfirmed).toHaveBeenCalledWith('p2');

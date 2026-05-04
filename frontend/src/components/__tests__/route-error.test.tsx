@@ -58,7 +58,7 @@ describe('RouteError', () => {
 
     render(<RouteError error={err} reset={reset} area="Policies" segment="policies" />)
 
-    fireEvent.click(screen.getByRole('button', { name: /try again/i }))
+    fireEvent.click(screen.getByRole('button', { name: /retry/i }))
     expect(reset).toHaveBeenCalledTimes(1)
   })
 

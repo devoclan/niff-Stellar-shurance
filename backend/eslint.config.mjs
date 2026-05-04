@@ -20,6 +20,17 @@ export default tseslint.config(
       "@typescript-eslint/no-floating-promises": "off",
       // Allow empty catch blocks with a comment
       "no-empty": ["error", { allowEmptyCatch: true }],
+      // Allow underscore-prefixed params/vars to be unused (convention for intentionally unused)
+      "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }],
     },
-  }
+  },
+  // Relaxed rules for test/spec files
+  {
+    files: ["**/*.spec.ts", "**/*.test.ts", "test/**/*.ts"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-require-imports": "off",
+      "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }],
+    },
+  },
 );

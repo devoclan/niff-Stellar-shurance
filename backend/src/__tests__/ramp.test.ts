@@ -27,8 +27,8 @@ function signPayload(body: string, secret = WEBHOOK_SECRET): string {
   return createHmac('sha256', secret).update(Buffer.from(body)).digest('hex');
 }
 
-function makeRawReq(body: string, sig?: string) {
-  return { rawBody: Buffer.from(body) } as any;
+function makeRawReq(body: string) {
+  return { rawBody: Buffer.from(body) } as { rawBody: Buffer };
 }
 
 const mockFlags = (enabled: boolean) => ({

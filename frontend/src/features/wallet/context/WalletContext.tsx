@@ -45,7 +45,7 @@ export interface WalletContextValue {
 
 const WalletContext = createContext<WalletContextValue | null>(null)
 
-const LS_WALLET_KEY = 'niffyinsure:lastWalletId'
+const _LS_WALLET_KEY = 'niffyinsure:lastWalletId'
 const LS_NETWORK_KEY = 'niffyinsure:appNetwork'
 const LS_WALLET_SESSION = 'niffyinsur-wallet-session-v1'
 
@@ -147,7 +147,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
         setConnectionStatus('connected')
         await refreshWalletNetwork()
       }
-    } catch (err) {
+    } catch {
       // Failed to reconnect (extension locked or unavailable)
       // Requirement: show a non-blocking banner if it fails.
       toast({

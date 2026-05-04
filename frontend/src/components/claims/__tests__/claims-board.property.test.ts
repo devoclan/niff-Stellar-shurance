@@ -102,7 +102,6 @@ describe("Property 16: ARIA live region is present on tally-bearing elements", (
 });
 
 // ─── DeadlineDisplay property tests ──────────────────────────────────────────
-// eslint-disable-next-line import/order
 import { DeadlineDisplay } from "../DeadlineDisplay";
 
 // Arbitrary: future ISO-8601 timestamp (1 second to 365 days from now)

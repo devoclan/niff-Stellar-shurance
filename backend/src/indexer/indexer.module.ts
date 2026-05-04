@@ -7,7 +7,6 @@ import { ReindexWorkerService } from './reindex.worker';
 import { ReconciliationService } from './reconciliation.service';
 import { PrismaModule } from '../prisma/prisma.module';
 import { RpcModule } from '../rpc/rpc.module';
-import { MetricsModule } from '../metrics/metrics.module';
 import { EventsModule } from '../events/events.module';
 
 @Module({

@@ -155,7 +155,7 @@ describe('ThemeToggle', () => {
       </ThemeProvider>
     )
 
-    fireEvent.click(screen.getByRole('button'))
+    fireEvent.click(screen.getByRole('button', { name: /switch to dark theme/i }))
 
     expect(screen.getByTestId('current-theme')).toHaveTextContent('dark')
   })
@@ -168,7 +168,7 @@ describe('ThemeToggle', () => {
       </ThemeProvider>
     )
 
-    fireEvent.click(screen.getByRole('button'))
+    fireEvent.click(screen.getByRole('button', { name: /switch to system theme/i }))
 
     expect(screen.getByTestId('current-theme')).toHaveTextContent('system')
   })
@@ -182,7 +182,7 @@ describe('ThemeToggle', () => {
       </ThemeProvider>
     )
 
-    fireEvent.click(screen.getByRole('button'))
+    fireEvent.click(screen.getByRole('button', { name: /switch to light theme/i }))
 
     expect(screen.getByTestId('current-theme')).toHaveTextContent('light')
   })

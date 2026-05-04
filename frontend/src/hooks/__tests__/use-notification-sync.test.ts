@@ -3,7 +3,7 @@
  * preference changes and skipped when wallet/JWT are absent.
  */
 
-import { renderHook, act, waitFor } from '@testing-library/react'
+import { renderHook, waitFor } from '@testing-library/react'
 import { useNotificationSync } from '@/hooks/use-settings'
 import * as notificationsApi from '@/lib/api/notifications'
 

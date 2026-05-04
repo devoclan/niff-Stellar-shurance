@@ -67,7 +67,7 @@ export class IpfsService {
   /**
    * Set the provider chain (called by module during init)
    */
-  setProviderChain(chain: IpfsProviderChainService): void {
+  setProviderChain(_providerChain: IpfsProviderChainService): void {
     // Injected via constructor; this method kept for backwards compatibility
     this.logger.log('IPFS provider chain initialized');
   }

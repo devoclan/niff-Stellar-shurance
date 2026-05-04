@@ -9,7 +9,7 @@ const ADDR = 'GBCPNZ6S7RK5N4BX6HBXBCX7P5QNBOJZFGDWBZBXCLK5T6KHWOPTLR3I'
 
 describe('truncateAddress', () => {
   it('truncates to first 4 and last 4 chars with ellipsis', () => {
-    expect(truncateAddress(ADDR, 4)).toBe('GBCP...R3I')
+    expect(truncateAddress(ADDR, 4)).toBe('GBCP...LR3I')
   })
 
   it('returns the address unchanged when shorter than 2*chars+3', () => {
@@ -17,7 +17,7 @@ describe('truncateAddress', () => {
   })
 
   it('uses default chars=5 when not specified', () => {
-    expect(truncateAddress(ADDR)).toBe('GBCPN...R3I')
+    expect(truncateAddress(ADDR)).toBe('GBCPN...TLR3I')
   })
 })
 
@@ -50,7 +50,7 @@ describe('WalletAddress', () => {
     render(<WalletAddress address={ADDR} network="testnet" />)
     const span = screen.getByTitle(ADDR)
     expect(span).toBeInTheDocument()
-    expect(span.textContent).toBe('GBCP...R3I')
+    expect(span.textContent).toBe('GBCP...LR3I')
   })
 
   it('shows copy button by default and hides it when showCopy=false', () => {

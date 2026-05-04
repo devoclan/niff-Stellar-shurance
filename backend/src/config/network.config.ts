@@ -49,12 +49,6 @@ function env(key: string): string | undefined {
   return process.env[key];
 }
 
-function requireEnv(key: string): string {
-  const val = env(key);
-  if (!val) throw new Error(`[NetworkConfig] Missing required env var: ${key}`);
-  return val;
-}
-
 /**
  * Loads and validates the network configuration at startup.
  * Throws with a clear message on any inconsistency.

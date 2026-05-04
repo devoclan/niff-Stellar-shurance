@@ -6,11 +6,9 @@ import {
   IsOptional,
   Min,
   Max,
-  IsIn,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import type { PolicyTypeEnum, RegionTierEnum } from '../../rpc/soroban.service';
 
 export class BuildRenewalTransactionDto {
   @ApiProperty({ description: 'Stellar address of the policyholder', example: 'GABC...' })

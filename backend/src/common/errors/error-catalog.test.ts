@@ -93,7 +93,7 @@ describe('error-catalog.json export', () => {
       string,
       { httpStatus: number; i18nKey: string; description: string }
     >;
-    for (const [code, entry] of Object.entries(json)) {
+    for (const [, entry] of Object.entries(json)) {
       expect(typeof entry.httpStatus).toBe('number');
       expect(typeof entry.i18nKey).toBe('string');
       expect(typeof entry.description).toBe('string');

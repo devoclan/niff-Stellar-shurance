@@ -4,7 +4,6 @@ import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { SorobanService } from '../rpc/soroban.service';
 import { MetricsService } from '../metrics/metrics.service';
-import { parseEvent } from '../events/events.schema';
 import {
   selectParser,
   initDeploymentRegistry,

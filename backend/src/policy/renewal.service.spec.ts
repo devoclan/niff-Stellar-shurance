@@ -21,8 +21,6 @@
  *   - Asset fallback chain: dto.asset > policy.assetContractId > undefined
  */
 
-import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { RenewalService, renewalBus } from './renewal.service';
 import {
   RENEWAL_OPEN_LEDGERS_BEFORE_EXPIRY,
   RENEWAL_GRACE_LEDGERS_AFTER_EXPIRY,

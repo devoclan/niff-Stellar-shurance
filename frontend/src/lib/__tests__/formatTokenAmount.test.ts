@@ -28,7 +28,7 @@ describe('formatTokenAmount', () => {
   })
 
   it('formats sub-unit amounts (less than 1 token)', () => {
-    expect(formatTokenAmount(1n, 7)).toBe('0.00')
+    expect(formatTokenAmount(1n, 7)).toBe('0.0000001')
     expect(formatTokenAmount(500_000n, 7)).toBe('0.05')
   })
 

@@ -8,7 +8,7 @@
  */
 
 import { Test, TestingModule } from "@nestjs/testing";
-import { INestApplication, HttpStatus, ValidationPipe } from "@nestjs/common";
+import { INestApplication, ValidationPipe } from "@nestjs/common";
 import request from "supertest";
 import { ConfigModule } from "@nestjs/config";
 import { EventsModule } from "../events.module";
@@ -86,9 +86,9 @@ describe("EventsController SSE (integration)", () => {
 
     // Mock Redis connections — prevent real network calls in CI
     const mockRedis = createMockRedis();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     (claimEventsService as any).subscriber = mockRedis;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     (claimEventsService as any).publisher = mockRedis;
 
     await app.init();
@@ -175,7 +175,7 @@ describe("EventsController SSE (integration)", () => {
   describe("ClaimEventsService", () => {
     it("publish() sends event to Redis channel", async () => {
       const mockRedis = createMockRedis();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       (claimEventsService as any).publisher = mockRedis;
 
       const event: ClaimStatusChangedEvent = {
@@ -194,7 +194,7 @@ describe("EventsController SSE (integration)", () => {
     });
 
     it("publish() fails silently when Redis is unavailable", async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       (claimEventsService as any).publisher = {
         publish: jest.fn().mockRejectedValue(new Error("Redis down")),
       };
@@ -220,7 +220,7 @@ describe("EventsController SSE (integration)", () => {
       };
 
       // Trigger internal handler directly
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       (claimEventsService as any).handleMessage(JSON.stringify(event));
 
       expect(received).toHaveLength(1);
@@ -231,14 +231,14 @@ describe("EventsController SSE (integration)", () => {
 
     it("handleMessage ignores malformed JSON without throwing", () => {
       expect(() => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         (claimEventsService as any).handleMessage("not-json");
       }).not.toThrow();
     });
 
     it("handleMessage ignores events missing required fields", () => {
       expect(() => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         (claimEventsService as any).handleMessage(JSON.stringify({ claimId: "1" }));
       }).not.toThrow();
     });

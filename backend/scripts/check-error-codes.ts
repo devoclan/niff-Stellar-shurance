@@ -8,10 +8,11 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { ERROR_CATALOG } from '../src/common/errors/error-catalog';
+import * as catalogModule from '../src/common/errors/error-catalog';
 
 const SRC_DIR = path.resolve(__dirname, '../src');
-const VALID_CODES = new Set(Object.keys(ERROR_CATALOG));
+const catalog = (catalogModule as { ERROR_CATALOG?: Record<string, unknown> }).ERROR_CATALOG ?? catalogModule as unknown as Record<string, unknown>;
+const VALID_CODES = new Set(Object.keys(catalog));
 const APP_EXCEPTION_RE = /new AppException\(\s*['"`]([A-Z_]+)['"`]/g;
 
 function walk(dir: string): string[] {

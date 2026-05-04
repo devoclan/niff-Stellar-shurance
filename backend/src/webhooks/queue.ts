@@ -16,7 +16,7 @@
  * ioredis keyPrefix — BullMQ manages its own key namespace.
  */
 
-import { Queue, Worker, Job, QueueEvents } from 'bullmq';
+import { Queue, Worker, Job } from 'bullmq';
 import { getBullMQConnection } from '../redis/client';
 import { WebhookJob } from '../types/webhook';
 

@@ -3,7 +3,7 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../../src/app.module';
 import { HttpExceptionFilter } from '../../src/common/filters/http-exception.filter';
-import { mintUserToken, mintAdminToken } from '../helpers/jwt';
+import { mintUserToken } from '../helpers/jwt';
 
 // A syntactically valid Stellar public key that is NOT a real keypair —
 // used only to exercise the challenge endpoint's format validation path.
