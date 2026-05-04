@@ -39,12 +39,11 @@
     "export-spec": "ts-node -P tsconfig.json scripts/export-spec.ts"
   },
   "dependencies": {
-    "@apollo/server": "^5.5.0",
-    "@as-integrations/express5": "^1.1.2",
+    "@apollo/server": "^4.11.0",
     "@bull-board/api": "^7.0.0",
     "@bull-board/express": "^6.20.6",
     "@nestjs-modules/ioredis": "^2.1.0",
-    "@nestjs/apollo": "^13.3.0",
+    "@nestjs/apollo": "13.1.0",
     "@nestjs/common": "^11.1.19",
     "@nestjs/config": "^4.0.4",
     "@nestjs/core": "^11.1.19",
