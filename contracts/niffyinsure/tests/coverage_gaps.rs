@@ -10,7 +10,7 @@
 
 #![cfg(test)]
 
-use niffyinsure::{validate::Error, NiffyInsureClient};
+use niffyinsure::NiffyInsureClient;
 use soroban_sdk::{testutils::Address as _, Address, Env};
 
 fn setup() -> (Env, NiffyInsureClient<'static>, Address, Address) {

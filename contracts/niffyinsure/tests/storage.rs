@@ -650,7 +650,7 @@ fn ttl_constants_documented_values() {
 fn policy_creation_sets_ttl() {
     let (env, contract_id, _, token) = setup();
     let holder = Address::generate(&env);
-    let client = NiffyInsureClient::new(&env, &contract_id);
+    let _client = NiffyInsureClient::new(&env, &contract_id);
 
     // Create a policy through the contract
     let asset = token;
@@ -799,7 +799,7 @@ fn keeper_bump_claim_ttl() {
 
 #[test]
 fn ttl_alert_threshold_management() {
-    let (env, contract_id, admin, _) = setup();
+    let (env, contract_id, _admin, _) = setup();
     let client = NiffyInsureClient::new(&env, &contract_id);
 
     // Test default threshold
