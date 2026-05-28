@@ -133,6 +133,88 @@ describe('NiffyInsure API (E2E)', () => {
     });
   });
 
+  // ── Notification Preferences ───────────────────────────────────────────────
+
+  describe('GET /api/notifications/preferences (authenticated)', () => {
+    it('returns 401 without valid JWT', async () => {
+      const res = await request(app.getHttpServer())
+        .get('/api/notifications/preferences');
+
+      expect(res.status).toBe(401);
+    });
+
+    it('returns default preferences for new user on first access', async () => {
+      const token = mintUserToken(FAKE_PUBKEY);
+      const res = await request(app.getHttpServer())
+        .get('/api/notifications/preferences')
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body).toEqual({
+        renewalRemindersEnabled: true,
+        claimUpdatesEnabled: true,
+      });
+    });
+
+    it('returns previously set preferences on subsequent access', async () => {
+      const token = mintUserToken(FAKE_PUBKEY);
+
+      // First get defaults
+      const firstRes = await request(app.getHttpServer())
+        .get('/api/notifications/preferences')
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(firstRes.status).toBe(200);
+      expect(firstRes.body.renewalRemindersEnabled).toBe(true);
+    });
+  });
+
+  describe('PATCH /api/notifications/preferences (authenticated)', () => {
+    it('returns 401 without valid JWT', async () => {
+      const res = await request(app.getHttpServer())
+        .patch('/api/notifications/preferences')
+        .send({ renewalRemindersEnabled: false });
+
+      expect(res.status).toBe(401);
+    });
+
+    it('updates preferences with partial update', async () => {
+      const token = mintUserToken(FAKE_PUBKEY);
+
+      const res = await request(app.getHttpServer())
+        .patch('/api/notifications/preferences')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ renewalRemindersEnabled: false });
+
+      expect(res.status).toBe(200);
+      expect(res.body.renewalRemindersEnabled).toBe(false);
+      expect(res.body.claimUpdatesEnabled).toBe(true); // unchanged
+    });
+
+    it('rejects unknown preference fields with 400', async () => {
+      const token = mintUserToken(FAKE_PUBKEY);
+
+      const res = await request(app.getHttpServer())
+        .patch('/api/notifications/preferences')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ unknownField: true });
+
+      expect(res.status).toBe(400);
+      expect(res.body).toHaveProperty('code');
+    });
+
+    it('rejects non-boolean values with 400', async () => {
+      const token = mintUserToken(FAKE_PUBKEY);
+
+      const res = await request(app.getHttpServer())
+        .patch('/api/notifications/preferences')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ renewalRemindersEnabled: 'true' });
+
+      expect(res.status).toBe(400);
+    });
+  });
+
   // ── Idempotency ─────────────────────────────────────────────────────────────
 
   describe('POST /api/claims (with Idempotency-Key)', () => {
