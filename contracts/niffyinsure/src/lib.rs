@@ -175,6 +175,7 @@ impl NiffyInsure {
             52 => validate::Error::NonceMismatch,
             53 => validate::Error::ClaimNotProcessing,
             54 => validate::Error::RollingClaimCapExceeded,
+            55 => validate::Error::PayoutDeadlineNotReached,
             _ => validate::Error::ClaimNotApproved,
         };
         policy::map_quote_error(&env, err)
@@ -281,6 +282,14 @@ impl NiffyInsure {
         claim_id: u64,
     ) -> Result<types::ClaimStatus, validate::Error> {
         claim::process_deadline(&env, claim_id)
+    }
+
+    /// Permissionless keeper: auto-reject an approved claim once its payout deadline has elapsed.
+    pub fn process_payout_timeout(
+        env: Env,
+        claim_id: u64,
+    ) -> Result<types::ClaimStatus, validate::Error> {
+        claim::process_payout_timeout(&env, claim_id)
     }
 
     pub fn get_claim_history(
