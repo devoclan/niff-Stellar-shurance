@@ -1126,3 +1126,16 @@ impl NiffyInsure {
         storage::set_open_claim(&env, &holder, policy_id, open_claim_count > 0);
     }
 }
+            44 => validate::Error::ClaimEvidenceUpdateNotAllowed,
+            45 => validate::Error::EvidenceCountOutOfBounds,
+    /// Claimant-only: replace evidence before voting starts.
+    pub fn add_claim_evidence(
+        env: Env,
+        claimant: Address,
+        claim_id: u64,
+        new_evidence: Vec<types::ClaimEvidenceEntry>,
+    ) -> Result<(), validate::Error> {
+        claimant.require_auth();
+        claim::add_claim_evidence(&env, &claimant, claim_id, &new_evidence)
+    }
+

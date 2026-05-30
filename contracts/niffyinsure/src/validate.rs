@@ -510,3 +510,7 @@ mod evidence_url_validation_tests {
         });
     }
 }
+    /// Claim evidence update must happen before any votes are cast.
+    ClaimEvidenceUpdateNotAllowed = 44,
+    /// Evidence count must fit the configured min/max bounds.
+    EvidenceCountOutOfBounds = 45,

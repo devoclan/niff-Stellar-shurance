@@ -992,3 +992,42 @@ mod appeal_stub_tests {
         assert!(ClaimStatus::AppealRejected.is_terminal());
     }
 }
+// ── add_claim_evidence ───────────────────────────────────────────────────────
+
+/// Claimant-only: replace evidence during the pre-vote window.
+///
+/// Allowed only while the claim is still `Processing` and no ballots have been
+/// cast yet. This lets the claimant correct or expand evidence before voting
+/// begins without mutating any in-flight vote state.
+pub fn add_claim_evidence(
+    env: &Env,
+    claimant: &Address,
+    claim_id: u64,
+    new_evidence: &Vec<ClaimEvidenceEntry>,
+) -> Result<(), Error> {
+    storage::assert_claims_not_paused(env);
+
+    let mut claim = storage::get_claim(env, claim_id).ok_or(Error::ClaimNotFound)?;
+    if claimant != &claim.claimant {
+        return Err(Error::NotEligibleVoter);
+    }
+    if claim.status != ClaimStatus::Processing
+        || claim.approve_votes != 0
+        || claim.reject_votes != 0
+    {
+        return Err(Error::ClaimEvidenceUpdateNotAllowed);
+    }
+
+    validate::check_claim_evidence_update(env, new_evidence)?;
+
+    claim.evidence = new_evidence.clone();
+    storage::set_claim(env, &claim);
+
+    let now = env.ledger().sequence();
+    let mut evidence_hashes: Vec<BytesN<32>> = Vec::new(env);
+    for e in new_evidence.iter() {
+        evidence_hashes.push_back(e.hash.clone());
+    }
+    ClaimEvidenceUpdated {
+        claim_id,
+        policy_id: claim.policy_id,
