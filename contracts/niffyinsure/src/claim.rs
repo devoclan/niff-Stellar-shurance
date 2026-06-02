@@ -1351,3 +1351,116 @@ pub fn add_claim_evidence(
     ClaimEvidenceUpdated {
         claim_id,
         policy_id: claim.policy_id,
+        evidence_hashes,
+        at_ledger: now,
+    }
+    .publish(env);
+
+    Ok(())
+}
+
+// ── disburse_installment (admin partial payout) ───────────────────────────────
+
+/// Admin-only: disburse a partial payout installment against an approved claim.
+///
+/// - `amount` must be > 0 and must not cause `paid_amount > net_amount`.
+/// - Emits `InstallmentDisbursed` every call.
+/// - When `paid_amount >= net_amount` after this transfer, marks status `Paid`
+///   and emits `ClaimFullyPaid`.
+pub fn disburse_installment(env: &Env, claim_id: u64, amount: i128) -> Result<(), Error> {
+    if amount <= 0 {
+        return Err(Error::ClaimAmountZero);
+    }
+
+    let mut claim = storage::get_claim(env, claim_id).ok_or(Error::ClaimNotFound)?;
+
+    if claim.status == ClaimStatus::Paid {
+        return Err(Error::AlreadyPaid);
+    }
+    if claim.status != ClaimStatus::Approved {
+        return Err(Error::ClaimNotApproved);
+    }
+
+    let now = env.ledger().sequence();
+    if now <= claim.dispute_deadline_ledger {
+        return Err(Error::DisputeWindowActive);
+    }
+
+    let gross = claim.amount;
+    let deductible = claim.deductible;
+    let net = gross.checked_sub(deductible).ok_or(Error::Overflow)?;
+    if net <= 0 {
+        return Err(Error::ClaimAmountZero);
+    }
+
+    let remaining = net.checked_sub(claim.paid_amount).ok_or(Error::Overflow)?;
+    if amount > remaining {
+        return Err(Error::OverDisbursement);
+    }
+
+    // Resolve payout recipient and asset (same logic as full payout).
+    let policy =
+        storage::get_policy(env, &claim.claimant, claim.policy_id).ok_or(Error::PolicyNotFound)?;
+    let type_config = storage::get_policy_type_config(env, &policy.policy_type);
+    let effective_asset = type_config
+        .as_ref()
+        .and_then(|c| c.payout_asset_override.clone())
+        .unwrap_or_else(|| policy.asset.clone());
+
+    if !storage::is_allowed_asset(env, &effective_asset) {
+        return Err(Error::InvalidAsset);
+    }
+
+    let payout_to = policy
+        .beneficiary
+        .clone()
+        .unwrap_or_else(|| policy.holder.clone());
+
+    crate::token::transfer(
+        env,
+        &effective_asset,
+        &env.current_contract_address(),
+        &payout_to,
+        amount,
+    );
+
+    claim.paid_amount = claim.paid_amount.checked_add(amount).ok_or(Error::Overflow)?;
+    claim.installment_count += 1;
+
+    events::emit_installment_disbursed(
+        env,
+        claim_id,
+        &payout_to,
+        amount,
+        claim.paid_amount,
+        net,
+        claim.installment_count,
+        &effective_asset,
+    );
+
+    if claim.paid_amount >= net {
+        let old_status = claim.status.clone();
+        claim.status = ClaimStatus::Paid;
+        push_status_transition(&mut claim.status_history, ClaimStatus::Paid, now);
+        storage::set_open_claim(env, &claim.claimant, claim.policy_id, false);
+        storage::remove_claim_rate_limit_prev(env, claim_id);
+        events::emit_claim_status_changed(env, claim_id, old_status, ClaimStatus::Paid);
+        events::emit_claim_fully_paid(
+            env,
+            claim_id,
+            &payout_to,
+            claim.paid_amount,
+            claim.installment_count,
+        );
+        crate::rolling_claim_cap::record_claim_paid(
+            env,
+            &claim.claimant,
+            claim.policy_id,
+            net,
+            now,
+        );
+    }
+
+    storage::set_claim(env, &claim);
+    Ok(())
+}

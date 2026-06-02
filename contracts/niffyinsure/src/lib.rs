@@ -603,6 +603,25 @@ impl NiffyInsure {
         result
     }
 
+    /// Admin-only: disburse a partial installment against an approved claim.
+    ///
+    /// Can be called multiple times; claim transitions to `Paid` only when
+    /// `paid_amount >= amount - deductible`. Reverts with `OverDisbursement`
+    /// if `amount` would exceed the remaining unpaid balance.
+    pub fn disburse_installment(
+        env: Env,
+        claim_id: u64,
+        amount: i128,
+    ) -> Result<(), validate::Error> {
+        let admin = storage::get_admin(&env);
+        admin.require_auth();
+        let result = claim::disburse_installment(&env, claim_id, amount);
+        if result.is_ok() {
+            admin::emit_admin_action(&env, &admin, "disburse_installment");
+        }
+        result
+    }
+
     /// Admin-only: dispute an approved claim during the dispute window.
     pub fn admin_dispute_claim(env: Env, claim_id: u64) -> Result<(), validate::Error> {
         let admin = storage::get_admin(&env);
@@ -1115,6 +1134,17 @@ impl NiffyInsure {
         reason: types::TerminationReason,
     ) -> Result<(), policy_lifecycle::PolicyError> {
         policy_lifecycle::terminate_policy(&env, holder, policy_id, reason)
+    }
+
+    /// Transfer policy ownership to `new_holder`. Authenticated by current holder.
+    /// Reverts if an open claim exists or `new_holder == holder`.
+    pub fn transfer_policy(
+        env: Env,
+        holder: Address,
+        policy_id: u32,
+        new_holder: Address,
+    ) -> Result<(), validate::Error> {
+        policy::transfer_policy(&env, &holder, policy_id, &new_holder)
     }
 
     pub fn admin_terminate_policy(

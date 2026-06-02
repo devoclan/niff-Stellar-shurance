@@ -593,3 +593,115 @@ pub fn emit_asset_premium_table_set(
     }
     .publish(env);
 }
+
+// ── Partial payout events ─────────────────────────────────────────────────────
+
+/// Emitted by `disburse_installment` on each partial payout.
+/// topics: ("niffyinsure", "installment_disbursed", claim_id)
+/// payload: { version, recipient, amount, paid_amount, total_amount, installment_count, asset, at_ledger }
+#[contractevent(topics = ["niffyinsure", "installment_disbursed"])]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct InstallmentDisbursedData {
+    #[topic]
+    pub claim_id: u64,
+    pub version: u32,
+    pub recipient: Address,
+    /// Amount disbursed in this installment (stroops).
+    pub amount: i128,
+    /// Cumulative amount paid so far (stroops).
+    pub paid_amount: i128,
+    /// Total approved claim amount (stroops).
+    pub total_amount: i128,
+    pub installment_count: u32,
+    pub asset: Address,
+    pub at_ledger: u32,
+}
+
+pub fn emit_installment_disbursed(
+    env: &Env,
+    claim_id: u64,
+    recipient: &Address,
+    amount: i128,
+    paid_amount: i128,
+    total_amount: i128,
+    installment_count: u32,
+    asset: &Address,
+) {
+    InstallmentDisbursedData {
+        claim_id,
+        version: EVENT_SCHEMA_VERSION,
+        recipient: recipient.clone(),
+        amount,
+        paid_amount,
+        total_amount,
+        installment_count,
+        asset: asset.clone(),
+        at_ledger: env.ledger().sequence(),
+    }
+    .publish(env);
+}
+
+/// Emitted by `disburse_installment` when `paid_amount >= net_amount` (claim fully paid).
+/// topics: ("niffyinsure", "claim_fully_paid", claim_id)
+#[contractevent(topics = ["niffyinsure", "claim_fully_paid"])]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ClaimFullyPaidData {
+    #[topic]
+    pub claim_id: u64,
+    pub version: u32,
+    pub recipient: Address,
+    pub total_paid: i128,
+    pub installment_count: u32,
+    pub at_ledger: u32,
+}
+
+pub fn emit_claim_fully_paid(
+    env: &Env,
+    claim_id: u64,
+    recipient: &Address,
+    total_paid: i128,
+    installment_count: u32,
+) {
+    ClaimFullyPaidData {
+        claim_id,
+        version: EVENT_SCHEMA_VERSION,
+        recipient: recipient.clone(),
+        total_paid,
+        installment_count,
+        at_ledger: env.ledger().sequence(),
+    }
+    .publish(env);
+}
+
+// ── Policy transfer event ─────────────────────────────────────────────────────
+
+/// Emitted by `transfer_policy` when ownership transfers to a new holder.
+/// topics: ("niffyinsure", "policy_transferred", policy_id, old_holder, new_holder)
+#[contractevent(topics = ["niffyinsure", "policy_transferred"])]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PolicyTransferredData {
+    #[topic]
+    pub policy_id: u32,
+    #[topic]
+    pub old_holder: Address,
+    #[topic]
+    pub new_holder: Address,
+    pub version: u32,
+    pub at_ledger: u32,
+}
+
+pub fn emit_policy_transferred(
+    env: &Env,
+    policy_id: u32,
+    old_holder: &Address,
+    new_holder: &Address,
+) {
+    PolicyTransferredData {
+        policy_id,
+        old_holder: old_holder.clone(),
+        new_holder: new_holder.clone(),
+        version: EVENT_SCHEMA_VERSION,
+        at_ledger: env.ledger().sequence(),
+    }
+    .publish(env);
+}

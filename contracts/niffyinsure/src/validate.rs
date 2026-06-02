@@ -83,6 +83,14 @@ pub enum Error {
     DelegationPermissionDenied = 59,
     /// Primary treasury insufficient and no reinsurance configured (issue #581).
     NoReinsuranceConfigured = 60,
+    /// Installment amount exceeds remaining unpaid balance on the claim.
+    OverDisbursement = 61,
+    /// Policy transfer target is invalid (zero address, same as current holder, or claim active).
+    PolicyTransferInvalid = 62,
+    /// Batch get exceeded CLAIM_BATCH_GET_MAX.
+    ClaimBatchTooLarge = 63,
+    /// Payout attempted while dispute window is still active.
+    DisputeWindowActive = 64,
 }
 
 pub fn validate_quorum_bps(bps: u32) -> Result<(), Error> {

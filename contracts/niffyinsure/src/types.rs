@@ -702,6 +702,11 @@ pub struct Claim {
     /// After this ledger passes, payout executes automatically for approved claims.
     /// Set to 0 if no dispute window is active.
     pub dispute_deadline_ledger: u32,
+    /// Running total of tokens disbursed so far (in stroops).
+    /// When `paid_amount >= amount - deductible`, the claim transitions to `Paid`.
+    pub paid_amount: i128,
+    /// Number of installment disbursements made against this claim.
+    pub installment_count: u32,
 }
 
 /// Per-policy rolling window accumulator for **paid** claim amounts (same ledger window for all policies).
