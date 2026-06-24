@@ -42,6 +42,8 @@ export const QuoteResponseSchema = z.object({
     age: z.number(),
     risk_score: z.number(),
   }),
+  tokenSymbol: z.string().default('XLM'),
+  tokenDecimals: z.number().default(7),
 })
 
 export type QuoteResponse = z.infer<typeof QuoteResponseSchema>
