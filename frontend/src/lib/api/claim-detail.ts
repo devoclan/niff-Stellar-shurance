@@ -4,7 +4,7 @@ export const ClaimMetadataSchema = z.object({
   id: z.number(),
   policyId: z.string(),
   creatorAddress: z.string(),
-  status: z.enum(['pending', 'approved', 'paid', 'rejected']),
+  status: z.enum(['pending', 'approved', 'paid', 'rejected', 'appeal']),
   amount: z.string(),
   description: z.string().optional(),
   evidenceHash: z.string(),
@@ -48,8 +48,15 @@ export const ConsistencyMetadataSchema = z.object({
   isStale: z.boolean(),
 })
 
+export const AppealInfoSchema = z.object({
+  appealRound: z.number(),
+  elevatedQuorum: z.number(),
+  appealDeadlineLedger: z.number(),
+  appealDeadlineTime: z.string(),
+})
+
 export const ClaimStatusHistoryEntrySchema = z.object({
-  status: z.enum(['pending', 'approved', 'paid', 'rejected']),
+  status: z.enum(['pending', 'approved', 'paid', 'rejected', 'appeal']),
   ledger: z.number(),
   timestamp: z.string(),
 })
@@ -65,6 +72,7 @@ export const ClaimDetailResponseSchema = z.object({
   voter_eligible: z.boolean(),
   userHasVoted: z.boolean().optional(),
   userVote: z.enum(['yes', 'no']).optional(),
+  appeal: AppealInfoSchema.optional(),
 })
 
 export type ClaimDetailResponse = z.infer<typeof ClaimDetailResponseSchema>

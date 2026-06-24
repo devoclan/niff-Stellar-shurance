@@ -25,6 +25,8 @@ function getStatusVariant(status: ClaimDetailResponse['metadata']['status']) {
       return 'success'
     case 'rejected':
       return 'destructive'
+    case 'appeal':
+      return 'warning'
     case 'pending':
     default:
       return 'info'
@@ -261,6 +263,41 @@ export function ClaimDetailView({ claimId }: ClaimDetailViewProps) {
             </div>
           </CardContent>
         </Card>
+
+        {claim.metadata.status === 'appeal' && claim.appeal && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Appeal information</CardTitle>
+              <CardDescription>This claim is currently under appeal review.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid gap-4 sm:grid-cols-3">
+                <div className="rounded-xl border bg-muted p-4">
+                  <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Appeal round</p>
+                  <p className="mt-2 text-2xl font-semibold tabular-nums">{claim.appeal.appealRound}</p>
+                </div>
+                <div className="rounded-xl border bg-muted p-4">
+                  <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Elevated quorum</p>
+                  <p className="mt-2 text-2xl font-semibold tabular-nums">{claim.appeal.elevatedQuorum}%</p>
+                </div>
+                <div className="rounded-xl border bg-muted p-4">
+                  <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Appeal deadline</p>
+                  <p className="mt-2 text-lg font-semibold">{formatTimestamp(claim.appeal.appealDeadlineTime)}</p>
+                </div>
+              </div>
+              <div className="rounded-xl border bg-muted p-4">
+                {latestLedger !== null ? (
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="text-sm font-medium text-muted-foreground">Appeal time remaining</span>
+                    <DeadlineCountdown deadlineLedger={claim.appeal.appealDeadlineLedger} currentLedger={latestLedger} />
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">Fetching latest ledger from Horizon…</p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         <Card>
           <CardHeader>
