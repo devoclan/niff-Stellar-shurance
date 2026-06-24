@@ -3,11 +3,13 @@
 import { EmptyState } from '@/components/ui/empty-state';
 import { SkeletonRow, SkeletonCard } from '@/components/ui/skeleton';
 
-export function PolicyListSkeleton({ rows = 5, layout = 'row' }: { rows?: number; layout?: 'row' | 'card' }) {
+export function PolicyListSkeleton({ rows = 5, layout = 'row', expectedCount }: { rows?: number; layout?: 'row' | 'card'; expectedCount?: number }) {
+  const count = expectedCount ?? rows;
+
   if (layout === 'card') {
     return (
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-hidden="true">
-        {Array.from({ length: rows }).map((_, i) => (
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-hidden="true" role="status" aria-label="Loading policies">
+        {Array.from({ length: count }).map((_, i) => (
           <SkeletonCard key={i} />
         ))}
       </div>
@@ -15,8 +17,8 @@ export function PolicyListSkeleton({ rows = 5, layout = 'row' }: { rows?: number
   }
 
   return (
-    <div className="space-y-0" aria-hidden="true">
-      {Array.from({ length: rows }).map((_, i) => (
+    <div className="space-y-0" aria-hidden="true" role="status" aria-label="Loading policies">
+      {Array.from({ length: count }).map((_, i) => (
         <SkeletonRow key={i} className="border-b border-gray-100" />
       ))}
     </div>
