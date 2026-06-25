@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Download, Loader2, RefreshCw, ShieldAlert } from 'lucide-react'
+import { Download, Loader2, RefreshCw, ShieldAlert, Tag } from 'lucide-react'
 import Link from 'next/link'
 
 import { Button } from '@/components/ui/button'
@@ -18,6 +18,66 @@ import { Input } from '@/components/ui/input'
 import { useAuth } from '@/lib/hooks/useAuth'
 import { adminApi, type AuditEntry, type FeatureFlag, type SolvencySnapshot } from '@/lib/api/admin'
 import { getConfig } from '@/config/env'
+import { getPrimaryContractVersion } from '@/lib/network-manifest'
+
+// ── Contract version header ────────────────────────────────────────────────
+
+/**
+ * Fetches the deployed contract semantic version via get_contract_metadata
+ * simulation from the backend, falling back to the registry's deployedVersion.
+ */
+function useContractVersion() {
+  const { apiUrl, network } = getConfig()
+  const [version, setVersion] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    // Try the backend simulation endpoint first
+    fetch(`${apiUrl}/api/contracts/metadata`, { credentials: 'include' })
+      .then(async (res) => {
+        if (!res.ok) throw new Error('metadata fetch failed')
+        const data = await res.json() as { version?: string }
+        if (data?.version) setVersion(data.version)
+        else throw new Error('no version in response')
+      })
+      .catch(() => {
+        // Fallback: read from deployment-registry.json bundled with the app
+        const v = getPrimaryContractVersion(network as 'testnet' | 'mainnet')
+        setVersion(v ?? null)
+      })
+      .finally(() => setLoading(false))
+  }, [apiUrl, network])
+
+  return { version, loading }
+}
+
+function ContractVersionBadge() {
+  const { version, loading } = useContractVersion()
+  const { network } = getConfig()
+
+  if (loading) {
+    return (
+      <span className="inline-flex items-center gap-1.5 rounded-md border border-muted bg-muted/50 px-2.5 py-1 text-xs text-muted-foreground animate-pulse">
+        <Tag className="h-3 w-3" aria-hidden="true" />
+        Loading…
+      </span>
+    )
+  }
+
+  if (!version) return null
+
+  return (
+    <span
+      className="inline-flex items-center gap-1.5 rounded-md border border-border bg-muted/40 px-2.5 py-1 text-xs font-mono font-medium text-foreground"
+      title={`Deployed contract version on ${network}`}
+      aria-label={`Contract version ${version} on ${network}`}
+    >
+      <Tag className="h-3 w-3 text-muted-foreground" aria-hidden="true" />
+      {version}
+      <span className="text-muted-foreground font-sans normal-case">·&nbsp;{network}</span>
+    </span>
+  )
+}
 
 // ── JWT role helper ────────────────────────────────────────────────────────
 
@@ -64,7 +124,10 @@ export default function AdminPage() {
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-8 space-y-8">
-      <h1 className="text-2xl font-semibold">Admin Dashboard</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-2xl font-semibold">Admin Dashboard</h1>
+        <ContractVersionBadge />
+      </div>
       <div className="grid gap-6 md:grid-cols-2">
         <SolvencyWidget jwt={jwt} />
         <ReindexWidget jwt={jwt} />
