@@ -100,6 +100,20 @@ export interface BulkUpdateResult {
   updated: number
 }
 
+export interface AllowedAsset {
+  id: string
+  contractId: string
+  symbol: string
+  decimals: number
+  isAllowed: boolean
+}
+
+export interface AddAssetParams {
+  contractId: string
+  symbol: string
+  decimals: number
+}
+
 // ── API calls ──────────────────────────────────────────────────────────────
 
 export const adminApi = {
@@ -170,43 +184,26 @@ export const adminApi = {
       body: JSON.stringify({ claimIds, status, dryRun }),
     }),
 
-  // ── Governance: Voters ─────────────────────────────────────────────
+  listAssets: (jwt: string) =>
+    apiFetch<AllowedAsset[]>(`${base()}/assets`, { headers: authHeaders(jwt) }),
 
-  listVoters: (jwt: string) =>
-    apiFetch<RegisteredVoter[]>(`${base()}/governance/voters`, {
-      headers: authHeaders(jwt),
-    }),
-
-  batchRegisterVoters: (jwt: string, voters: string[]) =>
-    apiFetch<{ unsignedXdr: string }>(`${base()}/governance/voters/batch-register`, {
+  addAsset: (jwt: string, params: AddAssetParams) =>
+    apiFetch<AllowedAsset>(`${base()}/assets`, {
       method: 'POST',
       headers: authHeaders(jwt),
-      body: JSON.stringify({ voters }),
+      body: JSON.stringify(params),
     }),
 
-  removeVoter: (jwt: string, voter: string) =>
-    apiFetch<{ unsignedXdr: string }>(`${base()}/governance/voters/remove`, {
-      method: 'POST',
+  setAssetAllowed: (jwt: string, id: string, isAllowed: boolean) =>
+    apiFetch<AllowedAsset>(`${base()}/assets/${encodeURIComponent(id)}`, {
+      method: 'PATCH',
       headers: authHeaders(jwt),
-      body: JSON.stringify({ voter }),
+      body: JSON.stringify({ isAllowed }),
     }),
 
-  // ── Governance: Quorum ─────────────────────────────────────────────
-
-  getQuorum: (jwt: string) =>
-    apiFetch<QuorumSettings>(`${base()}/governance/quorum`, {
-      headers: authHeaders(jwt),
-    }),
-
-  setQuorum: (jwt: string, bps: number) =>
-    apiFetch<{ unsignedXdr: string }>(`${base()}/governance/quorum`, {
-      method: 'POST',
-      headers: authHeaders(jwt),
-      body: JSON.stringify({ bps }),
-    }),
-
-  getQuorumImpact: (jwt: string, bps: number) =>
-    apiFetch<QuorumImpact>(`${base()}/governance/quorum/impact?bps=${bps}`, {
+  removeAsset: (jwt: string, id: string) =>
+    apiFetch<void>(`${base()}/assets/${encodeURIComponent(id)}`, {
+      method: 'DELETE',
       headers: authHeaders(jwt),
     }),
 }
