@@ -233,6 +233,48 @@ export function ClaimDetailView({ claimId }: ClaimDetailViewProps) {
           </CardContent>
         </Card>
 
+        {claim.metadata.status === 'approved' && claim.dispute.disputeWindowOpen && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Dispute window</CardTitle>
+              <CardDescription>Payout will auto-execute once this window expires.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Auto-execute ledger</p>
+                  <p className="text-lg font-semibold tabular-nums">{claim.dispute.disputeDeadlineLedger}</p>
+                </div>
+                <div>
+                  <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Auto-execute estimate</p>
+                  <p className="text-lg font-semibold">{claim.dispute.disputeDeadlineTime ? formatTimestamp(claim.dispute.disputeDeadlineTime) : '—'}</p>
+                </div>
+              </div>
+              <div className="rounded-xl border bg-amber-50 p-4">
+                {latestLedger !== null ? (
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="text-sm font-medium text-amber-800">Time before auto-execution</span>
+                    <DeadlineCountdown
+                      deadlineLedger={claim.dispute.disputeDeadlineLedger ?? 0}
+                      currentLedger={latestLedger}
+                    />
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">Fetching latest ledger…</p>
+                )}
+              </div>
+              {claim.dispute.disputeNote && (
+                <div className="rounded-xl border bg-blue-50 p-3">
+                  <p className="text-sm text-blue-800 flex items-center gap-2">
+                    <span className="text-lg" aria-hidden="true">&#9432;</span>
+                    {claim.dispute.disputeNote}
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
         <Card>
           <CardHeader>
             <CardTitle>Voting deadline</CardTitle>

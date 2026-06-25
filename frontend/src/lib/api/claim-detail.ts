@@ -54,11 +54,20 @@ export const ClaimStatusHistoryEntrySchema = z.object({
   timestamp: z.string(),
 })
 
+export const DisputeInfoSchema = z.object({
+  disputeDeadlineLedger: z.number().optional(),
+  disputeDeadlineTime: z.string().optional(),
+  disputeWindowOpen: z.boolean().optional(),
+  remainingDisputeSeconds: z.number().nullable().optional(),
+  disputeNote: z.string().optional(),
+})
+
 export const ClaimDetailResponseSchema = z.object({
   metadata: ClaimMetadataSchema,
   votes: VoteTalliesSchema,
   quorum: QuorumSchema,
   deadline: DeadlineSchema,
+  dispute: DisputeInfoSchema,
   evidence: ClaimEvidenceSchema,
   consistency: ConsistencyMetadataSchema,
   status_history: z.array(ClaimStatusHistoryEntrySchema),
@@ -66,6 +75,8 @@ export const ClaimDetailResponseSchema = z.object({
   userHasVoted: z.boolean().optional(),
   userVote: z.enum(['yes', 'no']).optional(),
 })
+
+export type DisputeInfo = z.infer<typeof DisputeInfoSchema>
 
 export type ClaimDetailResponse = z.infer<typeof ClaimDetailResponseSchema>
 
