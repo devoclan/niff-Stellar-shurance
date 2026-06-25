@@ -25,6 +25,8 @@ function getStatusVariant(status: ClaimDetailResponse['metadata']['status']) {
       return 'success'
     case 'rejected':
       return 'destructive'
+    case 'appeal':
+      return 'warning'
     case 'pending':
     default:
       return 'info'
@@ -232,6 +234,53 @@ export function ClaimDetailView({ claimId }: ClaimDetailViewProps) {
             </div>
           </CardContent>
         </Card>
+
+        {claim.metadata.status === 'appeal' && claim.appeal && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Appeal in progress</CardTitle>
+              <CardDescription>This claim is under appeal review with elevated quorum requirements.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid gap-4 sm:grid-cols-3">
+                <div className="rounded-xl border bg-amber-50 p-4">
+                  <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Appeal round</p>
+                  <p className="mt-2 text-2xl font-semibold tabular-nums">{claim.appeal.appealRound}</p>
+                </div>
+                <div className="rounded-xl border bg-amber-50 p-4">
+                  <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Elevated quorum</p>
+                  <p className="mt-2 text-2xl font-semibold tabular-nums">
+                    {(claim.appeal.elevatedQuorumBps / 100).toFixed(2)}%
+                  </p>
+                  <p className="text-xs text-muted-foreground">{claim.appeal.elevatedQuorumBps} bps</p>
+                </div>
+                <div className="rounded-xl border bg-amber-50 p-4">
+                  <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Appeal deadline ledger</p>
+                  <p className="mt-2 text-2xl font-semibold tabular-nums">{claim.appeal.appealVotingDeadlineLedger}</p>
+                </div>
+              </div>
+              {claim.appeal.appealVotingDeadlineTime && (
+                <div className="rounded-xl border bg-muted p-4">
+                  <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Appeal voting deadline</p>
+                  <p className="mt-1 text-sm font-medium">{formatTimestamp(claim.appeal.appealVotingDeadlineTime)}</p>
+                </div>
+              )}
+              <div className="rounded-xl border bg-muted p-4">
+                {latestLedger !== null ? (
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="text-sm font-medium text-muted-foreground">Time remaining for appeal vote</span>
+                    <DeadlineCountdown
+                      deadlineLedger={claim.appeal.appealVotingDeadlineLedger}
+                      currentLedger={latestLedger}
+                    />
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">Fetching latest ledger…</p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {claim.metadata.status === 'approved' && claim.dispute.disputeWindowOpen && (
           <Card>
