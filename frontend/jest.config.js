@@ -25,7 +25,7 @@ const config = {
     "<rootDir>/tests/",
     "<rootDir>/specs/",
   ],
-  setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
+  setupFilesAfterEnv: ["<rootDir>/jest.setup.ts", "<rootDir>/jest.flaky-retry.js"],
   collectCoverageFrom: [
     "src/**/*.{ts,tsx}",
     "!src/**/*.d.ts",
